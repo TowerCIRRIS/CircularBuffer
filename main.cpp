@@ -5,7 +5,9 @@ using namespace std;
 #include "CircularBuffer.h"
 
 
-CircularBufferHandle hCircularBuffer;
+void writeByteTest();
+
+// CircularBufferHandle hCircularBuffer;
 
 #define BUFFER_SIZE 50
 unsigned char buffer[BUFFER_SIZE];
@@ -18,16 +20,70 @@ CircularBuffer circularBuffer;
 int main(void)
 {
 
-
-    hCircularBuffer.buffer = buffer;
-    hCircularBuffer.maxSize = BUFFER_SIZE;
-    hCircularBuffer.dataLength = TESTDATA_LEN;
+    writeByteTest();
 
 
-   circularBuffer.init(buffer,BUFFER_SIZE,TESTDATA_LEN);
+    return EXIT_SUCCESS;
+}
 
-   circularBuffer.write(dataBufferWrite);
-   cout << buffer << "\n";
+void writeByteTest()
+{
+
+    //     hCircularBuffer.buffer = buffer;
+    // hCircularBuffer.maxSize = BUFFER_SIZE;
+    // hCircularBuffer.dataLength = TESTDATA_LEN;
+
+    circularBuffer.init(buffer,BUFFER_SIZE);
+
+    circularBuffer.writeBytes(dataBufferWrite,TESTDATA_LEN);
+    cout << buffer << "\n";
+
+    dataBufferWrite[0] = '0';
+    circularBuffer.writeBytes(dataBufferWrite,TESTDATA_LEN);
+    cout << buffer << "\n";
+
+    dataBufferWrite[0] = '1';
+    circularBuffer.writeBytes(dataBufferWrite,TESTDATA_LEN);
+    cout << buffer << "\n";
+
+    dataBufferWrite[0] = '_';
+
+    for(int i = 0 ; i < 20; i++)
+    {
+        cout << "\n\rTest " << i << ": ";
+        cout << "Buffer used: " << (int)circularBuffer.getUse() << " Free space" << (int)circularBuffer.getFreeSpace();
+        int writeStatus = (int)circularBuffer.writeBytes(dataBufferWrite,TESTDATA_LEN);
+        cout << " Write Status =  " << writeStatus;
+    }
+
+    for(int i = 0 ; i < 5; i++)
+    {
+        cout << "\n\rTest " << i+20 << ": ";
+        cout << "Buffer used: " << (int)circularBuffer.getUse() << " Free space" << (int)circularBuffer.getFreeSpace();
+        int readStatus = (int)circularBuffer.read(dataBufferRead,TESTDATA_LEN);
+        cout << " Read Status =  " << readStatus<< " Data: " << dataBufferRead[0] << dataBufferRead[1] << dataBufferRead[2] << dataBufferRead[3];
+    }
+
+    for(int i = 0 ; i < 10; i++)
+    {
+        cout << "\n\rTest " << i << ": ";
+        cout << "Buffer used: " << (int)circularBuffer.getUse() << " Free space" << (int)circularBuffer.getFreeSpace();
+        int writeStatus = (int)circularBuffer.writeBytes(dataBufferWrite,TESTDATA_LEN);
+        cout << " Write Status =  " << writeStatus;
+    }
+
+
+}
+
+
+void writeFixedLenghtTest()
+{
+
+
+    circularBuffer.init(buffer,BUFFER_SIZE,MODE_FIXED_LENGHT,TESTDATA_LEN);
+
+    circularBuffer.write(dataBufferWrite);
+    cout << buffer << "\n";
 
     dataBufferWrite[0] = '0';
     circularBuffer.write(dataBufferWrite);
@@ -38,6 +94,7 @@ int main(void)
     cout << buffer << "\n";
 
     dataBufferWrite[0] = '_';
+
     for(int i = 0 ; i < 20; i++)
     {
         cout << "\n\rTest " << i << ": ";
@@ -46,7 +103,7 @@ int main(void)
         cout << " Write Status =  " << writeStatus;
     }
 
-     for(int i = 0 ; i < 5; i++)
+    for(int i = 0 ; i < 5; i++)
     {
         cout << "\n\rTest " << i+20 << ": ";
         cout << "Buffer used: " << (int)circularBuffer.getUse() << " Free space" << (int)circularBuffer.getFreeSpace();
@@ -54,7 +111,7 @@ int main(void)
         cout << " Read Status =  " << readStatus<< " Data: " << dataBufferRead[0] << dataBufferRead[1] << dataBufferRead[2] << dataBufferRead[3];
     }
 
-        for(int i = 0 ; i < 10; i++)
+    for(int i = 0 ; i < 10; i++)
     {
         cout << "\n\rTest " << i << ": ";
         cout << "Buffer used: " << (int)circularBuffer.getUse() << " Free space" << (int)circularBuffer.getFreeSpace();
@@ -63,6 +120,4 @@ int main(void)
     }
 
 
-
-    return EXIT_SUCCESS;
 }

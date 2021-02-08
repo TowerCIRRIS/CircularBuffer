@@ -11,9 +11,10 @@
 
 #define CIRCULAR_BUFFER_WRITE_SUCCESS	0
 
+#define CIRCULAR_BUFFER_MODE_ERROR          252
 #define CIRCULAR_BUFFER_NOT_ENOUGH_SPACE    253
 #define CIRCULAR_BUFFER_FULL                254
-#define CIRCULAR_BUFFER_WRITE_ERROR		255
+#define CIRCULAR_BUFFER_WRITE_ERROR		    255
 
 
 typedef struct{
@@ -29,35 +30,43 @@ typedef struct{
 
 }CircularBufferHandle;
 
-// void circularBufferInit(CircularBufferHandle * hBuffer, unsigned char *data);
+typedef enum 
+{
+    MODE_MANUAL_LENGHT, // User needs to input the number of bytes to write/read using writeBytes(..) function
+    MODE_FIXED_LENGHT,  // Lenght of data is set at init and user can use write(..), function will ignore the lenght parameter
+    MODE_CHAR_TOKKEN,   // Usefull to write string, write / read function will use the 
+    MODE_ENUM_LENGHT
+}CircularBufferMode;
 
-// void circularBufferReset(CircularBufferHandle * hBuffer);
-
-// int getCircularBufferUse(CircularBufferHandle * hBuffer);
-// int getCircularBufferFreeSpace(CircularBufferHandle * bBuffer);
-// void emptyCircularBuffer(CircularBufferHandle * hBbuffer);
 
 class CircularBuffer
 {
     private:
         
     CircularBufferHandle hBuffer;
+    CircularBufferMode mBufferMode = MODE_MANUAL_LENGHT;
+    
 
     public:
         CircularBuffer(/* args */);
         ~CircularBuffer();
     
     
+    
+    
     void reset();
     
     
-    void init(unsigned char *buffer, unsigned int  bufferSize, int dataLength = 0, unsigned char token = 0);
+    void init(unsigned char *buffer, unsigned int  bufferSize, CircularBufferMode mode = MODE_MANUAL_LENGHT, int dataLength = 0, unsigned char token = '\0');
     
     int getUse();
     int getFreeSpace();
     void empty();
-    unsigned char write(unsigned char *data);
+
+    unsigned char write(char *data);
+    unsigned char writeBytes(unsigned char *data, unsigned int lenght);
     unsigned char read(unsigned char *data);
+    unsigned char read(unsigned char *data, unsigned int lenght);
 
     //void reset(CircularBufferHandle * hBuffer);
     //void init(CircularBufferHandle * hBuffer, unsigned char *data);
