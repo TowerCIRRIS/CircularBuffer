@@ -11,6 +11,7 @@
 
 #define CIRCULAR_BUFFER_WRITE_SUCCESS	0
 
+
 #define CIRCULAR_BUFFER_MODE_ERROR          252
 #define CIRCULAR_BUFFER_NOT_ENOUGH_SPACE    253
 #define CIRCULAR_BUFFER_FULL                254
@@ -25,7 +26,7 @@ typedef struct{
     unsigned char full;
     unsigned int TailPointer;
     unsigned int HeadPointer;
-    unsigned char token;
+    char token;
     int dataLength;
 
 }CircularBufferHandle;
@@ -57,16 +58,18 @@ class CircularBuffer
     void reset();
     
     
-    void init(unsigned char *buffer, unsigned int  bufferSize, CircularBufferMode mode = MODE_MANUAL_LENGHT, int dataLength = 0, unsigned char token = '\0');
+    void init(unsigned char *buffer, unsigned int  bufferSize, CircularBufferMode mode = MODE_MANUAL_LENGHT, int dataLength = 0, char token = '\0');
     
     int getUse();
     int getFreeSpace();
     void empty();
 
-    unsigned char write(char *data);
-    unsigned char writeBytes(unsigned char *data, unsigned int lenght);
+    //unsigned char write(unsigned char *data);
+    unsigned char writeChar(char *data, unsigned int lenght = 0);
+    unsigned char writeBytes(unsigned char *data, unsigned int lenght = 0);
     unsigned char read(unsigned char *data);
-    unsigned char read(unsigned char *data, unsigned int lenght);
+    unsigned int readToTokken(unsigned char *data, char tokken);
+    unsigned int read(unsigned char *data, unsigned int lenght);
 
     //void reset(CircularBufferHandle * hBuffer);
     //void init(CircularBufferHandle * hBuffer, unsigned char *data);
