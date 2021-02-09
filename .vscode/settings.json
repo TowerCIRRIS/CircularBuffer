@@ -7,6 +7,8 @@
         "istream": "cpp",
         "ios": "cpp",
         "ostream": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "streambuf": "cpp",
+        "memory": "cpp"
     }
 }

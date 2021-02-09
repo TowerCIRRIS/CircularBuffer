@@ -3,10 +3,12 @@
 using namespace std;
 
 #include "CircularBuffer.h"
+#include <string.h>
 
 
 void writeByteTest();
 void writeFixedLenghtTest();
+void writeTokkenTest();
 
 // CircularBufferHandle hCircularBuffer;
 
@@ -16,14 +18,15 @@ unsigned char buffer[BUFFER_SIZE];
 #define TESTDATA_LEN 4
 unsigned char dataBufferWrite[TESTDATA_LEN] = {'A','B','C','D'};
 unsigned char dataBufferRead[TESTDATA_LEN+5];
+char dataBufferReadChar[10];
 
 CircularBuffer circularBuffer;
 int main(void)
 {
 
-    //writeByteTest();
-    writeFixedLenghtTest();
-
+   //writeByteTest();
+   // writeFixedLenghtTest();
+   writeTokkenTest();
 
     return EXIT_SUCCESS;
 }
@@ -49,7 +52,7 @@ void writeByteTest()
     for(int i = 0 ; i < 20; i++)
     {
         cout << "\n\rTest " << i << ": ";
-        cout << "Buffer used: " << (int)circularBuffer.getUse() << " Free space" << (int)circularBuffer.getFreeSpace();
+        cout << "Buffer used: " << (int)circularBuffer.getUsedSpace() << " Free space" << (int)circularBuffer.getFreeSpace();
         int writeStatus = (int)circularBuffer.writeBytes(dataBufferWrite,TESTDATA_LEN);
         cout << " Write Status =  " << writeStatus;
     }
@@ -57,15 +60,15 @@ void writeByteTest()
     for(int i = 0 ; i < 5; i++)
     {
         cout << "\n\rTest " << i+20 << ": ";
-        cout << "Buffer used: " << (int)circularBuffer.getUse() << " Free space" << (int)circularBuffer.getFreeSpace();
-        int readStatus = (int)circularBuffer.read(dataBufferRead,TESTDATA_LEN);
+        cout << "Buffer used: " << (int)circularBuffer.getUsedSpace() << " Free space" << (int)circularBuffer.getFreeSpace();
+        int readStatus = (int)circularBuffer.readBytes(dataBufferRead,TESTDATA_LEN);
         cout << " Read Status =  " << readStatus<< " Data: " << dataBufferRead[0] << dataBufferRead[1] << dataBufferRead[2] << dataBufferRead[3];
     }
 
     for(int i = 0 ; i < 10; i++)
     {
         cout << "\n\rTest " << i << ": ";
-        cout << "Buffer used: " << (int)circularBuffer.getUse() << " Free space" << (int)circularBuffer.getFreeSpace();
+        cout << "Buffer used: " << (int)circularBuffer.getUsedSpace() << " Free space" << (int)circularBuffer.getFreeSpace();
         int writeStatus = (int)circularBuffer.writeBytes(dataBufferWrite,TESTDATA_LEN);
         cout << " Write Status =  " << writeStatus;
     }
@@ -90,7 +93,7 @@ void writeFixedLenghtTest()
     {
         int writeStatus = (int)circularBuffer.writeBytes(dataBufferWrite);
 
-        bufferUse = circularBuffer.getUse();
+        bufferUse = circularBuffer.getUsedSpace();
         freeSpace = circularBuffer.getFreeSpace();
 
         cout << "\n\rTest " << i << ": ";
@@ -134,15 +137,15 @@ void writeFixedLenghtTest()
     tesIteration = 2;
     cout << "\n\n\r Starting Read test for " << tesIteration << " Cycles";
 
-    int initialBufferUse = circularBuffer.getUse();
+    int initialBufferUse = circularBuffer.getUsedSpace();
     int initialFreeSpace = circularBuffer.getFreeSpace();
 
     for(int i = 0 ; i < tesIteration; i++)
     {
 
-        int readStatus = (int)circularBuffer.read(dataBufferRead);
+        int readStatus = (int)circularBuffer.readBytes(dataBufferRead);
 
-        bufferUse = circularBuffer.getUse();
+        bufferUse = circularBuffer.getUsedSpace();
         freeSpace = circularBuffer.getFreeSpace();
 
         cout << "\n\rTest " << i << ": ";
@@ -160,20 +163,18 @@ void writeFixedLenghtTest()
             cout << "\n\rexpected FreeSpace:" << (initialFreeSpace + (i+1)*dataLen) << "Received" << freeSpace;
             cout << "\n\n\n\r";
             return;
-
         }
     }
 
     cout << "\n\n\r Starting Empty test";
     circularBuffer.empty();
 
-    bufferUse = circularBuffer.getUse();
+    bufferUse = circularBuffer.getUsedSpace();
     freeSpace = circularBuffer.getFreeSpace();
 
     if(bufferUse == 0 && freeSpace == BUFFER_SIZE)
     {
-         cout << "  --> PASS ";
-        
+         cout << "  --> PASS "; 
     }
     else
     {
@@ -182,7 +183,6 @@ void writeFixedLenghtTest()
         cout << "\n\rexpected FreeSpace:" << BUFFER_SIZE << "Received" << freeSpace;
         cout << "\n\n\n\r";
         return;
-
     }
 
     cout << "\n\n\r Starting write loop test";
@@ -192,10 +192,10 @@ void writeFixedLenghtTest()
     for(i = 0 ; i < tesIteration; i++)
     {
         int writeStatus = (int)circularBuffer.writeBytes(dataBufferWrite);
-        int readStatus = circularBuffer.read(dataBufferRead);
+        int readStatus = circularBuffer.readBytes(dataBufferRead);
 
-         bufferUse = circularBuffer.getUse();
-         freeSpace = circularBuffer.getFreeSpace();
+        bufferUse = circularBuffer.getUsedSpace();
+        freeSpace = circularBuffer.getFreeSpace();
 
         if(writeStatus !=  CIRCULAR_BUFFER_WRITE_SUCCESS)
         {
@@ -204,37 +204,34 @@ void writeFixedLenghtTest()
         }
         if(dataBufferRead[0] != 'A' || dataBufferRead[1] != 'B' ||dataBufferRead[2] != 'C' ||dataBufferRead[3] != 'D')
         {
-             cout << "Data Read Error at iteration : " << i << "  --> FAIL ";
+            cout << "Data Read Error at iteration : " << i << "  --> FAIL ";
             return;
         }
-        // cout << "\n\rTest " << i << ": ";
-        // cout << "Buffer size:" << BUFFER_SIZE << "  used: " << bufferUse << "  Free space: " << (int)circularBuffer.getFreeSpace();
-        // cout << "  Write Status =  " << writeStatus;
+
     }
     cout << "\n\r"<< i << " Iterations done --> PASS ";
-
-
-
-
 }
+
 
 void writeTokkenTest()
 {
 
     int bufferUse, freeSpace, status;
-    int dataLen = TESTDATA_LEN;
+    
+    const char *  message = "Salut !  ";
+    int dataLen = 1 + strcspn(message, "\0"); // sizeof(message)+1;
 
     circularBuffer.init(buffer,BUFFER_SIZE,MODE_CHAR_TOKKEN,0,'\0');
 
-    int tesIteration = 10; //(BUFFER_SIZE / dataLen) + 1; // do 1 more iteration than the number needed to fill buffer to test overflow
+    int tesIteration = (BUFFER_SIZE / dataLen) + 1; // do 1 more iteration than the number needed to fill buffer to test overflow
 
     cout << "\n\r Starting Write test for " << tesIteration << " Cycles";
 
     for(int i = 0 ; i < tesIteration; i++)
-    {
-        int writeStatus = (int)circularBuffer.writeChar("Salut ! ");
+    { 
+        int writeStatus = (int)circularBuffer.writeChar(message);
 
-        bufferUse = circularBuffer.getUse();
+        bufferUse = circularBuffer.getUsedSpace();
         freeSpace = circularBuffer.getFreeSpace();
 
         cout << "\n\rTest " << i << ": ";
@@ -278,20 +275,24 @@ void writeTokkenTest()
     tesIteration = 2;
     cout << "\n\n\r Starting Read test for " << tesIteration << " Cycles";
 
-    int initialBufferUse = circularBuffer.getUse();
+    int initialBufferUse = circularBuffer.getUsedSpace();
     int initialFreeSpace = circularBuffer.getFreeSpace();
 
     for(int i = 0 ; i < tesIteration; i++)
     {
 
-        int readStatus = (int)circularBuffer.read(dataBufferRead);
+        int readStatus = (int)circularBuffer.readChar(dataBufferReadChar);
 
-        bufferUse = circularBuffer.getUse();
+        bufferUse = circularBuffer.getUsedSpace();
         freeSpace = circularBuffer.getFreeSpace();
 
         cout << "\n\rTest " << i << ": ";
         cout << "Buffer size:" << BUFFER_SIZE << "  used: " << bufferUse << "  Free space: " << (int)circularBuffer.getFreeSpace();
-        cout << " Read Status =  " << readStatus << " Data: " << dataBufferRead[0] << dataBufferRead[1] << dataBufferRead[2] << dataBufferRead[3];
+        cout << " Read Status =  " << readStatus << " Data: ";
+        for(int j = 0 ; j < dataLen; j++)
+        {
+                cout <<  " char " << j << "|" <<  dataBufferReadChar[j] << "|";
+        } 
 
         if((bufferUse == initialBufferUse - (i+1)*dataLen) && (freeSpace == initialFreeSpace + (i+1)*dataLen))
         {
@@ -311,7 +312,7 @@ void writeTokkenTest()
     cout << "\n\n\r Starting Empty test";
     circularBuffer.empty();
 
-    bufferUse = circularBuffer.getUse();
+    bufferUse = circularBuffer.getUsedSpace();
     freeSpace = circularBuffer.getFreeSpace();
 
     if(bufferUse == 0 && freeSpace == BUFFER_SIZE)
@@ -335,25 +336,18 @@ void writeTokkenTest()
     int i = 0;    
     for(i = 0 ; i < tesIteration; i++)
     {
-        int writeStatus = (int)circularBuffer.writeBytes(dataBufferWrite);
-        int readStatus = circularBuffer.read(dataBufferRead);
+        //int writeStatus = (int)circularBuffer.writeBytes(dataBufferWrite);
+        int writeStatus = (int)circularBuffer.writeChar(message);
+        int readStatus = circularBuffer.readChar(dataBufferReadChar);
 
-         bufferUse = circularBuffer.getUse();
+         bufferUse = circularBuffer.getUsedSpace();
          freeSpace = circularBuffer.getFreeSpace();
 
         if(writeStatus !=  CIRCULAR_BUFFER_WRITE_SUCCESS)
         {
-            cout << "Test Fail at iteation: " << i << "  Status: " << writeStatus<< "  --> FAIL ";
+            cout << "Test Fail at iteration: " << i << "  Status: " << writeStatus<< "  --> FAIL ";
             return;
         }
-        if(dataBufferRead[0] != 'A' || dataBufferRead[1] != 'B' ||dataBufferRead[2] != 'C' ||dataBufferRead[3] != 'D')
-        {
-             cout << "Data Read Error at iteration : " << i << "  --> FAIL ";
-            return;
-        }
-        // cout << "\n\rTest " << i << ": ";
-        // cout << "Buffer size:" << BUFFER_SIZE << "  used: " << bufferUse << "  Free space: " << (int)circularBuffer.getFreeSpace();
-        // cout << "  Write Status =  " << writeStatus;
     }
     cout << "\n\r"<< i << " Iterations done --> PASS ";
 

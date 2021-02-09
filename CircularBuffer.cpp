@@ -9,7 +9,7 @@ CircularBuffer::~CircularBuffer()
 {
 }
 
-void CircularBuffer::reset()
+void CircularBuffer::empty()
 {
 
     hBuffer.empty = 1;
@@ -27,10 +27,10 @@ void CircularBuffer::init(unsigned char *buffer, unsigned int bufferSize, Circul
 
     mBufferMode = bufferMode;
 
-    reset();
+    empty(); // set circular buffer to initial state
 }
 
-int CircularBuffer::getUse()
+int CircularBuffer::getUsedSpace()
 {
 
     if (hBuffer.empty)
@@ -66,13 +66,7 @@ int CircularBuffer::getFreeSpace()
     return -1;
 }
 
-void CircularBuffer::empty()
-{
 
-    hBuffer.TailPointer = hBuffer.HeadPointer;
-    hBuffer.empty = 1;
-    hBuffer.full = 0;
-}
 
 // unsigned char CircularBuffer::write(unsigned char *data)
 // {
@@ -96,11 +90,11 @@ void CircularBuffer::empty()
 //     return writeBytes(data, writeLenght);
 // }
 
-unsigned char CircularBuffer::writeChar(char *data, unsigned int lenght)
+cbError_t CircularBuffer::writeChar(const char *data, unsigned int lenght)
 {
     unsigned int writeLenght;
 
-    unsigned char* ptr = reinterpret_cast<unsigned char *>(data);
+    const unsigned char* ptr = reinterpret_cast<const unsigned char *>(data);
 
     if(lenght > 0){
 
@@ -132,11 +126,11 @@ unsigned char CircularBuffer::writeChar(char *data, unsigned int lenght)
 
 }
 
-unsigned char CircularBuffer::writeBytes(unsigned char *data, unsigned int lenght)
+cbError_t CircularBuffer::writeBytes(const unsigned char *data, unsigned int lenght)
 {
 
     unsigned int j;
-    unsigned int writeLenght;
+    unsigned int writeLenght = lenght;
 
     // if leght not specified ( default 0) assume we are in constant size mode
     if(lenght < 1)
@@ -176,51 +170,59 @@ unsigned char CircularBuffer::writeBytes(unsigned char *data, unsigned int lengh
     return CIRCULAR_BUFFER_WRITE_SUCCESS; //success
 }
 
-unsigned char CircularBuffer::read(unsigned char *data)
+unsigned int CircularBuffer::readChar(char *data, unsigned int lenght)
 {
+    unsigned char* ptr = reinterpret_cast<unsigned char *>(data);
 
-    unsigned int j;
-    unsigned int index;
-    unsigned char *buf;
-
-    index = hBuffer.TailPointer;
-    buf = &(hBuffer.buffer[index]);
-
-    switch (mBufferMode)
+    if(lenght > 0)
     {
-    case MODE_FIXED_LENGHT:
-        return read(data, hBuffer.dataLength);
-        break;
-
-    case MODE_CHAR_TOKKEN:
-        return readToTokken(data,hBuffer.token);
-        break;
-
-    default:
-        return CIRCULAR_BUFFER_MODE_ERROR;
-        break;
+        return readBytes(ptr, lenght);
     }
+    else
+    {
+        switch (mBufferMode)
+        {
+            case MODE_FIXED_LENGHT:
+                return readBytes(ptr, hBuffer.dataLength);
+                break;
+
+            case MODE_CHAR_TOKKEN:
+                return readToTokken(ptr,hBuffer.token);
+                break;
+            default:
+                return CIRCULAR_BUFFER_MODE_ERROR;
+                break;
+        }
+    }
+    
 
     
 }
 
-unsigned int CircularBuffer::read(unsigned char *data, unsigned int lenght)
+unsigned int CircularBuffer::readBytes(unsigned char *data, unsigned int lenght)
 {
 
     unsigned int j;
-    //unsigned int index;
-    //unsigned char *buf;
+    unsigned int writeLenght = lenght;
 
-   // index = hBuffer.TailPointer;
-   // buf = &(hBuffer.buffer[index]);
+    if(lenght < 1)
+    {
+        if(mBufferMode == MODE_FIXED_LENGHT){
+            writeLenght = hBuffer.dataLength;
+        }
+        else
+        {
+            return 0;
+        }
+        
+    }
+
 
     if (hBuffer.empty == 0)
     {
         hBuffer.full = 0;
 
-        //index = hBuffer.TailPointer;
-
-        for (j = 0; j < lenght; j++)
+        for (j = 0; j < writeLenght; j++)
         {
             data[j] = hBuffer.buffer[hBuffer.TailPointer];
             
@@ -250,12 +252,6 @@ unsigned int CircularBuffer::readToTokken(unsigned char *data, char tokken)
     unsigned int j = 0;;
     bool searchComplete = false;
 
-    //unsigned int index;
-    //unsigned char *buf;
-
-   // index = hBuffer.TailPointer;
-   // buf = &(hBuffer.buffer[index]);
-
     if (hBuffer.empty == 0)
     {
         hBuffer.full = 0;
@@ -264,7 +260,7 @@ unsigned int CircularBuffer::readToTokken(unsigned char *data, char tokken)
         {
             data[j] = hBuffer.buffer[hBuffer.TailPointer];
             
-            if( tokken == *(char*)&data[j] )
+            if( tokken == *(char*)(&data[j]) )
             {
                searchComplete = true;
             }
