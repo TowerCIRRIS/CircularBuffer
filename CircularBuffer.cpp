@@ -265,6 +265,10 @@ unsigned int CircularBuffer::readToTokken(unsigned char *data, char tokken)
             {
                searchComplete = true;
                hBuffer.TailPointer = tailPointerCopy+1;
+               if(hBuffer.TailPointer == hBuffer.HeadPointer)
+               {
+                    hBuffer.empty = 1;
+               }
                hBuffer.full = 0;
                return (j+1); // Return number of bytes read
             }

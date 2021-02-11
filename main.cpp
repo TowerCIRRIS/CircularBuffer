@@ -377,12 +377,12 @@ void testTokkenNotFound(){
     
     //Test tokken on an empty buffer
         cout << "\n\n\n\r-----------Test tokken on an empty buffer-----------\n\r ";
-        cout << "\n\rBefore";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        cout << "\n\r Before";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
         originalHead = circularBuffer.hBuffer.HeadPointer; originalTail = circularBuffer.hBuffer.TailPointer;
         readLen = circularBuffer.readChar(dataBufferReadChar);
-        cout << "\n\rAfter";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        cout << "\n\r After";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
         if(circularBuffer.hBuffer.TailPointer == originalTail && originalHead == circularBuffer.hBuffer.HeadPointer && readLen == 0)
         {
             cout << "\n\r --> PASS";
@@ -398,12 +398,15 @@ void testTokkenNotFound(){
         circularBuffer.writeChar(phrase1); circularBuffer.writeChar(phrase1);
         circularBuffer.readChar(dataBufferReadChar); circularBuffer.readChar(dataBufferReadChar);
 
-        cout << "\n\rBefore";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        cout << "\n\r Before";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+
         originalHead = circularBuffer.hBuffer.HeadPointer; originalTail = circularBuffer.hBuffer.TailPointer;
         readLen = circularBuffer.readChar(dataBufferReadChar);
-        cout << "\n\rAfter";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+
+        cout << "\n\r After";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+
         if(circularBuffer.hBuffer.TailPointer == originalTail && originalHead == circularBuffer.hBuffer.HeadPointer && readLen == 0)
         {
             cout << "\n\r --> PASS";
@@ -423,21 +426,21 @@ void testTokkenNotFound(){
 
         // Dummy write and read to move read/write ptr
         cout << "\n\r dummy WRITE / READ";
-        cout << "\n\rBefore";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        cout << "\n\r Before";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
         circularBuffer.writeChar(phrase1); circularBuffer.writeChar(phrase1);
         circularBuffer.readChar(dataBufferReadChar); circularBuffer.readChar(dataBufferReadChar); 
-         cout << "\n\rAfter";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+         cout << "\n\r After";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
 
         cout << "\n\r Big message  WRITE / READ";
-        cout << "\n\rBefore";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        cout << "\n\r Before";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
         originalHead = circularBuffer.hBuffer.HeadPointer; originalTail = circularBuffer.hBuffer.TailPointer;
         circularBuffer.writeChar(phrase2);
         readLen = circularBuffer.readChar(dataBufferReadChar);
-        cout << "\n\rAfter";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        cout << "\n\r After";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
 
         cout << "\n\r Read Length: " << readLen;
 
@@ -460,6 +463,52 @@ void testTokkenNotFound(){
     
 
     //Test token on a half filled buffer, with loop : Write ptr < Read ptr without tokken in it
+    cout << "\n\n\n\r-----------Test token on a half filled buffer, with loop : Write ptr < Read ptr without tokken in it-----------\n\r ";
+        strcpy(phrase2,"01234567890123456789900000");
+
+        // Dummy write and read to move read/write ptr
+        cout << "\n\r dummy WRITE / READ";
+        cout << "\n\r Before";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        circularBuffer.writeChar(phrase1); circularBuffer.writeChar(phrase1);
+        circularBuffer.readChar(dataBufferReadChar); circularBuffer.readChar(dataBufferReadChar); 
+         cout << "\n\r After";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+
+        cout << "\n\r Big message  WRITE ";
+        cout << "\n\r Before";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        originalHead = circularBuffer.hBuffer.HeadPointer; originalTail = circularBuffer.hBuffer.TailPointer;
+        circularBuffer.writeChar(phrase2,26);
+        cout << "\n\r After";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+
+        cout << "\n\r Big message  READ";
+        cout << "\n\r Before";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        originalHead = circularBuffer.hBuffer.HeadPointer; originalTail = circularBuffer.hBuffer.TailPointer;   
+        readLen = circularBuffer.readChar(dataBufferReadChar);
+        cout << "\n\r After";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+
+        cout << "\n\r Read Length: " << readLen;
+
+        for(int i = 0; i < readLen; i++)
+        {
+             cout << dataBufferReadChar[i];
+        }
+
+         if(circularBuffer.hBuffer.TailPointer == originalTail && originalHead == circularBuffer.hBuffer.HeadPointer && readLen == 0)
+        {
+            cout << "\n\r --> PASS";
+        }
+        else{
+            cout << "\n\r --> FAIL \n\n";
+            return;
+        }
+
+
+
 
     //Test token on a 100% filled buffer with tokken in it
            cout << "\n\n\n\r-----------Test token on a 100% filled buffer with tokken in it-----------\n\r ";
@@ -468,21 +517,21 @@ void testTokkenNotFound(){
 
         // Dummy write and read to move read/write ptr
         cout << "\n\r dummy WRITE / READ";
-        cout << "\n\rBefore";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        cout << "\n\r Before";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
         circularBuffer.writeChar(phrase1); circularBuffer.writeChar(phrase1);
         circularBuffer.readChar(dataBufferReadChar); circularBuffer.readChar(dataBufferReadChar); 
-         cout << "\n\rAfter";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+         cout << "\n\r After";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
 
         cout << "\n\r Big message  WRITE / READ";
-        cout << "\n\rBefore";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        cout << "\n\r Before";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
         originalHead = circularBuffer.hBuffer.HeadPointer; originalTail = circularBuffer.hBuffer.TailPointer;
         circularBuffer.writeChar(phrase2);
         readLen = circularBuffer.readChar(dataBufferReadChar);
-        cout << "\n\rAfter";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        cout << "\n\r After";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
 
         cout << "\n\r ";
         for(int i = 0; i < readLen; i++)
@@ -506,21 +555,21 @@ void testTokkenNotFound(){
 
         // Dummy write and read to move read/write ptr
         cout << "\n\r dummy WRITE / READ";
-        cout << "\n\rBefore";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        cout << "\n\r Before";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
         circularBuffer.writeChar(phrase1); circularBuffer.writeChar(phrase1);
         circularBuffer.readChar(dataBufferReadChar); circularBuffer.readChar(dataBufferReadChar); 
-         cout << "\n\rAfter";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+         cout << "\n\r After";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
 
         cout << "\n\r Big message  WRITE / READ";
-        cout << "\n\rBefore";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        cout << "\n\r Before";
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
         originalHead = circularBuffer.hBuffer.HeadPointer; originalTail = circularBuffer.hBuffer.TailPointer;
         circularBuffer.writeChar(phrase2,50);
         readLen = circularBuffer.readChar(dataBufferReadChar);
         cout << "\n\rAfter";
-        cout << "\n\rTail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
+        cout << " Tail: " << circularBuffer.hBuffer.TailPointer << "  Head: " << circularBuffer.hBuffer.HeadPointer;
 
         cout << "\n\r ";
         for(int i = 0; i < readLen; i++)
