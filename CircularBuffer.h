@@ -47,7 +47,7 @@ class CircularBuffer
 {
     private:
         
-    CircularBufferHandle hBuffer;
+    //CircularBufferHandle hBuffer;
     CircularBufferMode mBufferMode = MODE_MANUAL_LENGHT;
 
     public:
@@ -55,6 +55,8 @@ class CircularBuffer
         CircularBuffer(/* args */);
         ~CircularBuffer();
      
+     CircularBufferHandle hBuffer;
+
     /**
      * @brief Function ot initialize the circular buffer
      * 

@@ -249,30 +249,47 @@ unsigned int CircularBuffer::readBytes(unsigned char *data, unsigned int lenght)
 unsigned int CircularBuffer::readToTokken(unsigned char *data, char tokken)
 {
 
-    unsigned int j = 0;;
+    unsigned int j = 0;
     bool searchComplete = false;
+    int tailPointerCopy = hBuffer.TailPointer;
 
     if (hBuffer.empty == 0)
     {
-        hBuffer.full = 0;
+        
 
         while(!searchComplete)
         {
-            data[j] = hBuffer.buffer[hBuffer.TailPointer];
+            data[j] = hBuffer.buffer[tailPointerCopy];
             
             if( tokken == *(char*)(&data[j]) )
             {
                searchComplete = true;
+               hBuffer.TailPointer = tailPointerCopy+1;
+               hBuffer.full = 0;
+               return (j+1); // Return number of bytes read
             }
             
-            hBuffer.TailPointer++;
+            tailPointerCopy++;
 
-             if (hBuffer.TailPointer >= hBuffer.maxSize)    // loop tail pointer
-                hBuffer.TailPointer = 0;
+             if (tailPointerCopy >= hBuffer.maxSize)    // loop tail pointer
+                tailPointerCopy = 0;
 
-            if (hBuffer.TailPointer == hBuffer.HeadPointer){
-                hBuffer.empty = 1;
-                return (j+1); // Return number of bytes read
+            if (tailPointerCopy == hBuffer.HeadPointer){
+               
+               // Tokken not found
+               if(!searchComplete)
+               {
+                   return 0;
+               }
+               else
+               {
+                    hBuffer.full = 0;
+                    hBuffer.empty = 1;
+                    hBuffer.TailPointer = tailPointerCopy; // update real Tail
+                    return (j+1); // Return number of bytes read
+               }
+
+            
             }
 
             j++;
